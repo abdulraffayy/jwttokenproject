@@ -1,100 +1,95 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [error, setError] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-    if (!formData.email.includes('@')) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    setError('');
-    console.log('Signing up with:', formData);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
+    const userData = {
+      fullName,
+      username,
+      email,
+      password,
+      confirmPassword,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/signup', userData);
+      console.log('Signup successful:', response.data);
+      setSuccessMessage('Signup successful!'); // Show success message
+      setErrorMessage(''); // Clear any previous error message
+    } catch (error) {
+      console.error('There was an error signing up:', error);
+      setErrorMessage('There was an error signing up. Please try again.'); // Show error message
+      setSuccessMessage(''); // Clear any previous success message
+    }
   };
 
   return (
-    <>
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-blue-500">
-        <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
-          <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">Create Account</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="fullName">
-                Full Name
-              </label>
-              <input
-                className="shadow-md appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                id="fullName"
-                type="text"
-                placeholder="Enter your full name"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                className="shadow-md appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                className="shadow-md appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <form className="bg-white p-8 rounded-lg shadow-lg w-96" onSubmit={handleSubmit}>
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+        
+        <input 
+          type="text" 
+          placeholder="Full Name" 
+          className="border border-gray-300 p-3 mb-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+        
+        <input 
+          type="text" 
+          placeholder="Username" 
+          className="border border-gray-300 p-3 mb-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        
+        <input 
+          type="email" 
+          placeholder="Email" 
+          className="border border-gray-300 p-3 mb-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        
+        <input 
+          type="password" 
+          placeholder="Password" 
+          className="border border-gray-300 p-3 mb-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        
+        <input 
+          type="password" 
+          placeholder="Confirm Password" 
+          className="border border-gray-300 p-3 mb-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        
+        <button 
+          type="submit" 
+          className="bg-blue-500 text-white p-3 rounded-lg w-full hover:bg-blue-600 transition duration-200"
+        >
+          Sign Up
+        </button>
+        
+        {successMessage && <p className="text-green-500 mt-4 text-center">{successMessage}</p>}
+        {errorMessage && <p className="text-red-500 mt-4 text-center">{errorMessage}</p>}
+      </form>
+    </div>
+  )
+}
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-            <button
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500"
-              type="submit"
-            >
-              Sign Up
-            </button>
-          </form>
-          <p className="mt-4 text-center text-gray-600">
-            Already have an account? <Link to="/login" className="text-purple-600 hover:underline">Login</Link>
-          </p>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Signup;
+export default Signup
